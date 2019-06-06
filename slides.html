@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Title</title>
+    <meta charset="utf-8">
+    <style>
+      @import url(https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz);
+      @import url(https://fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic);
+      @import url(https://fonts.googleapis.com/css?family=Ubuntu+Mono:400,700,400italic);
+
+      body { font-family: 'Droid Serif'; }
+      h1, h2, h3 {
+        font-family: 'Yanone Kaffeesatz';
+        font-weight: normal;
+      }
+      .remark-code, .remark-inline-code { font-family: 'Ubuntu Mono'; }
+    </style>
+  </head>
+  <body>
+    <textarea id="source">
+
+class: center, middle
+![Logo Caipyra](logo_caipyra.png)
+
+---
+
+class: center middle
+
+# Desenvolvendo webcrawlers utilizando Scrapy
+
+---
+
+# Agenda
+
+- Conceitos de raspagem de dados
+
+- Instalando o Scrapy
+
+- Arquitetura de um Spider
+
+- Como extrair dados de um arquivo HTML
+
+- Exercícios
+
+---
+
+# Renne Rocha
+
+![Foto Renne](foto_renne_caipyra.jpg)
+
+- Python Developer na **Scrapinghub**
+
+- Laboratório Hacker de Campinas (https://lhc.net.br)
+
+- Grupy-Campinas / Grupy-Jundiaí
+
+- renne@rennerocha.com
+
+- @rennerocha (Twitter / Github / Instagram / etc)
+
+---
+
+# O que é raspagem de dados?
+
+Extrair dados **estruturados** a partir de fontes de dados **não estruturadas** (normalmente uma página web).
+
+---
+
+# Casos de Uso
+
+- Pesquisas com dados governamentais
+
+- Monitorar comentários sobre meus produtos
+
+- Monitorar os produtos dos meus concorrentes
+
+- Ofertas de empregos, imóveis, etc
+
+- Análise de Redes Sociais
+
+---
+
+# O que é o **Scrapy**?
+
+![Scrapy Logo](scrapylogo.png)
+
+[https://scrapy.org/](https://scrapy.org/)
+
+- Framework especializado em raspagem de dados
+
+- Baterias incluídas (_Sessões/Cookies, Redirecionamentos, Cache, Exportação de Dados, Seletores XPath ou CSS, etc_)
+
+- Extensível através de Extensões, Middlewares, Pipelines
+
+---
+# Instalando o Scrapy
+
+``` bash
+renne@capivara:~$ mkdir tutorial
+renne@capivara:~$ cd tutorial
+renne@capivara:~$ python3 -m venv .venv
+renne@capivara:~$ source .venv/bin/activate
+renne@capivara:~$ pip install scrapy
+
+...
+
+renne@capivara:~$ scrapy version
+1.6.0
+```
+
+---
+
+# Instalando o Scrapy (Windows)
+
+### https://docs.scrapy.org/en/latest/intro/install.html
+
+Apesar de ser possível instalar o Scrapy no Windows usando o **pip**, a recomendação é utilizar o
+Anaconda ou Miniconda. Isso deve evitar a maioria dos problemas na instalação.
+
+Depois de instalar o Anaconda ou Minicoda, instale o Scrapy usando:
+
+``` bash
+conda install -c conda-forge scrapy
+```
+---
+
+# Spiders
+
+Classe que define as regras para extrair dados e navegar em um conjunto de páginas da internet.
+
+```
+# myfirstspider.py
+import scrapy
+
+class MyFirstSpider(scrapy.Spider):
+  name = 'my-first-spider'
+
+  start_urls = [
+    'http://quotes.toscrape.com/page/1/',
+    'http://quotes.toscrape.com/page/2/',
+  ]
+
+  def parse(self, response):
+    self.logger.info('Just parsing {}'.format(response.url))
+```
+
+---
+
+# Spiders
+
+Classe que define as regras para extrair dados e navegar em um conjunto de páginas da internet.
+
+```
+# myfirstspider.py
+import scrapy
+
+*class MyFirstSpider(scrapy.Spider):
+  name = 'my-first-spider'
+
+  start_urls = [
+    'http://quotes.toscrape.com/page/1/',
+    'http://quotes.toscrape.com/page/2/',
+  ]
+
+  def parse(self, response):
+    self.logger.info('Just parsing {}'.format(response.url))
+```
+---
+
+# Spiders
+
+Classe que define as regras para extrair dados e navegar em um conjunto de páginas da internet.
+
+```
+# myfirstspider.py
+import scrapy
+
+class MyFirstSpider(scrapy.Spider):
+* name = 'my-first-spider'
+
+  start_urls = [
+    'http://quotes.toscrape.com/page/1/',
+    'http://quotes.toscrape.com/page/2/',
+  ]
+
+  def parse(self, response):
+    self.logger.info('Just parsing {}'.format(response.url))
+```
+
+---
+
+# Spiders
+
+Classe que define as regras para extrair dados e navegar em um conjunto de páginas da internet.
+
+```
+# myfirstspider.py
+import scrapy
+
+class MyFirstSpider(scrapy.Spider):
+  name = 'my-first-spider'
+
+* start_urls = [
+*   'http://quotes.toscrape.com/page/1/',
+*   'http://quotes.toscrape.com/page/2/',
+* ]
+
+  def parse(self, response):
+    self.logger.info('Just parsing {}'.format(response.url))
+```
+
+---
+
+# Spiders
+
+Classe que define as regras para extrair dados e navegar em um conjunto de páginas da internet.
+
+```
+# myfirstspider.py
+import scrapy
+
+class MyFirstSpider(scrapy.Spider):
+  name = 'my-first-spider'
+
+* def start_requests(self):
+*   urls = [
+*     'http://quotes.toscrape.com/page/1/',
+*     'http://quotes.toscrape.com/page/2/',
+*   ]
+*   requests = []
+*   for url in urls:
+*     requests.append(
+*       scrapy.Request(url=url, callback=self.parse))
+*
+*   return requests
+
+  def parse(self, response):
+    self.logger.info('Just parsing {}'.format(response.url))
+```
+
+---
+
+# Spiders
+
+Classe que define as regras para extrair dados e navegar em um conjunto de páginas da internet.
+
+```
+# myfirstspider.py
+import scrapy
+
+class MyFirstSpider(scrapy.Spider):
+  name = 'my-first-spider'
+
+  def start_requests(self):
+    urls = [
+      'http://quotes.toscrape.com/page/1/',
+      'http://quotes.toscrape.com/page/2/',
+    ]
+    requests = []
+    for url in urls:
+      requests.append(
+        scrapy.Request(url=url, callback=self.parse))
+
+    return requests
+
+* def parse(self, response):
+*   self.logger.info('Just parsing {}'.format(response.url))
+```
+---
+
+![runspider](scrapy_runspider.gif)
+
+---
+
+class: center, middle
+# Extraindo Dados
+
+---
+
+class: center, middle
+
+![](quotes_main.png)
+
+### http://quotes.toscrape.com/
+
+---
+
+# Seletores CSS
+### https://www.w3.org/TR/CSS2/selector.html
+
+# Seletores XPath
+### https://www.w3.org/TR/xpath/all/
+
+---
+
+# Extraindo Dados
+
+```
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+  name = 'quotes'
+
+  start_urls = ['http://quotes.toscrape.com/']
+
+  def parse(self, response):
+    quotes = response.css('.quote')
+    for quote in quotes:
+      yield {
+        'quote': quote.css('.text::text').get(),
+        'author': quote.css('.author::text').get()
+      }
+```
+
+---
+
+# Extraindo Dados
+
+```
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+  name = 'quotes'
+
+  start_urls = ['http://quotes.toscrape.com/']
+
+  def parse(self, response):
+*   quotes = response.css('.quote')
+    for quote in quotes:
+      yield {
+*       'quote': quote.css('.text::text').get(),
+*       'author': quote.css('.author::text').get()
+      }
+```
+
+
+---
+
+# Extraindo Dados
+
+```
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+  name = 'quotes'
+
+  start_urls = ['http://quotes.toscrape.com/']
+
+  def parse(self, response):
+*   quotes = response.css('.quote')
+    for quote in quotes:
+      yield {
+*       'quote': quote.css('.text::text').get(),
+*       'author': quote.css('.author::text').get()
+      }
+```
+
+## SELETORES **CSS**
+
+---
+
+# Extraindo Dados
+
+```
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+  name = 'quotes'
+
+  start_urls = ['http://quotes.toscrape.com/']
+
+  def parse(self, response):
+*   quotes = response.xpath('//div[@class="quote"]')
+    for quote in quotes:
+      yield {
+*       'quote': quote.xpath('.//span[@class="text"]/text()').get(),
+*       'author': quote.xpath('.//small[@class="author"]/text()').get()
+      }
+```
+
+## SELETORES **XPath**
+
+---
+# Extraindo Dados
+
+```
+import scrapy
+
+class QuotesSpider(scrapy.Spider):
+  name = 'quotes'
+
+  start_urls = ['http://quotes.toscrape.com/']
+
+  def parse(self, response):
+*   quotes = response.css('.quote')
+    for quote in quotes:
+      yield {
+*       'quote': quote.xpath('.//span[@class="text"]/text()').get(),
+*       'author': quote.xpath('.//small[@class="author"]/text()').get()
+      }
+```
+
+## Você pode utilizar os dois tipos de seletores no seu Spider.
+
+---
+
+# Extraindo Dados
+
+```
+$ scrapy runspider quotes.py
+```
+---
+
+# Extraindo Dados
+
+```
+$ scrapy runspider quotes.py
+```
+
+```
+$ scrapy runspider quotes.py -o results.csv
+```
+---
+# Extraindo Dados
+
+```
+$ scrapy runspider quotes.py
+```
+
+```
+$ scrapy runspider quotes.py -o results.csv
+```
+
+```
+$ scrapy runspider quotes.py -o results.json
+```
+
+```
+$ scrapy runspider quotes.py -o results.jl
+```
+
+```
+$ scrapy runspider quotes.py -o results.xml
+```
+
+### Você pode criar novas maneiras e formatos para exportar os seus dados.
+
+https://docs.scrapy.org/en/latest/topics/feed-exports.html
+
+---
+
+
+# Exemplos de Seletores CSS
+
+```
+response.css("h1")
+```
+
+```
+response.css("ul#offers")
+```
+
+```
+response.css(".product")
+```
+
+```
+response.css("ul#offers .product a::attr(href)")
+```
+
+```
+response.css("ul#offers .product *::text")
+```
+
+```
+response.css("ul#offers .product p::text")
+```
+
+---
+
+# Exemplos de Seletores XPath
+
+
+```
+response.xpath("//h1")
+```
+
+```
+response.xpath("//h1[2]")
+```
+
+```
+response.xpath("//ul[@id='offers']")
+```
+
+```
+response.xpath("//li/a/@href")
+```
+
+```
+response.xpath("//li//text()")
+```
+
+```
+response.xpath("//li[@class='ad']/following-sibling::li")
+```
+
+---
+
+class: center, middle
+![cat](cat_keyboard.gif)
+
+---
+
+# Exercício 1
+
+http://quotes.toscrape.com/
+
+Nesse site, temos uma lista de citações com seus autores, um link para a página
+com mais informações sobre o autor eu um conjunto de tags.
+
+Queremos extrair as seguintes informações:
+
+- Nome do Autor
+
+- URL da página de detalhes do autor
+
+- A citação
+
+- Lista de Tags
+
+---
+
+# Exercício 2
+
+http://quotes.toscrape.com/scroll
+
+Houve uma mudança na página de citações! Ao invés de termos links de paginação,
+agore temos um scroll infinito!
+
+**DICA** ao abrir a opção "_Inspecionar Elemento_", escolha a aba "_Network_" e
+observe o que acontece quando você navega até o final da página.
+
+---
+
+# Exercício 3
+
+http://quotes.toscrape.com/login
+
+O acesso a página de citações agora só é possível depois de preencher um formulário de login.
+
+**DICA** para fazer o login é necessário realizar chamada **POST** contendo o nome de usuário e a senha.
+
+---
+
+# Exercício 3
+
+http://quotes.toscrape.com/login
+
+O acesso a página de citações agora só é possível depois de preencher um formulário de login.
+
+```
+form_data = {...}
+
+yield scrapy.FormRequest(
+  desired_url,
+  formdata=form_data,
+  callback=self.parse_form_submit,
+)
+```
+---
+# Exercício 3
+
+http://quotes.toscrape.com/login
+
+O acesso a página de citações agora só é possível depois de preencher um formulário de login.
+
+```
+form_data = {...}
+
+yield scrapy.FormRequest(
+  desired_url,
+* formdata=form_data,
+  callback=self.parse_form_submit,
+)
+```
+---
+
+# Web Scraping Sandbox
+
+### http://toscrape.com/
+---
+
+class: center, middle
+# OBRIGADO
+
+---
+
+class: center, middle
+# DÚVIDAS?
+
+## @rennerocha
+## renne@rennerocha.com
+
+-------------------
+
+## **PyBar** - Cervejaria Kirchen
+### Rua Júlio Faga, 194
+### Jardim Bandeirantes
+
+   </textarea>
+    <script src="remark-latest.min.js">
+    </script>
+    <script>
+      var slideshow = remark.create({
+
+        highlightLanguage: "python",
+        highlightLines: true
+
+
+      });
+    </script>
+  </body>
+</html>
